@@ -8,7 +8,7 @@ import os, re
 from urllib.parse import quote
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-VER = "4"
+VER = "6"
 # Vista previa (GitHub Pages): los buscadores no indexan el borrador. Ponlo en False el día del lanzamiento.
 PREVIEW = True                                   # súbelo cada vez que cambies css/co.css o js/co.js
 
@@ -26,20 +26,21 @@ WA_SHOW = "{{+57 3XX XXX XXXX}}"           # teléfono tal como se muestra en la
 DIST = "distribuidor oficial"
 DIST_C = DIST[0].upper() + DIST[1:]
 
-# ------------------------------------------------------------------ CIUDADES CON INSTALACIÓN
-HQ_CITY, HQ_REGION = "Bogotá", "Bogotá D.C."
-CITIES = [("bogota", "Bogotá", "Bogotá D.C."), ("medellin", "Medellín", "Antioquia"),
-          ("cali", "Cali", "Valle del Cauca"), ("barranquilla", "Barranquilla", "Atlántico")]
-CITY_NAMES = [c[1] for c in CITIES]
-CITY_LIST = ", ".join(CITY_NAMES[:-1]) + " y " + CITY_NAMES[-1]
+# ------------------------------------------------------------------ ZONA DE SERVICIO: solo Medellín (pedido de Nasfeco, 18/10/2026)
+HQ_CITY, HQ_REGION = "Medellín", "Antioquia"
+CITY_LIST = "Medellín"
+# Comunas y corregimientos de Medellín (Alcaldía de Medellín). El comprobador "¿Llegamos a tu casa?" usa estas listas.
+COMUNAS = ["El Poblado", "Laureles-Estadio", "Belén", "La América", "Guayabal", "Robledo", "Castilla", "Aranjuez", "Buenos Aires", "La Candelaria",
+           "San Javier", "Villa Hermosa", "Manrique", "Doce de Octubre", "Santa Cruz", "Popular"]
+CORREGIMIENTOS = ["Santa Elena", "San Antonio de Prado", "San Cristóbal", "Altavista", "San Sebastián de Palmitas"]
+OTROS = ["Envigado", "Sabaneta", "Itagüí", "Bello", "La Estrella", "Caldas", "Copacabana", "Girardota", "Barbosa", "Rionegro", "Otro municipio"]
 PRIVACY_URL = "politica-cookies#datos-personales"
 
 # ------------------------------------------------------------------ hreflang (Ecuador ↔ Colombia)
 # Solo tiene efecto si la web de Ecuador también enlaza de vuelta a estas páginas con es-CO.
 HREFLANG_ON = True
 EC_SITE = "https://nasfeco.com/"
-HREFLANG = {"": "", "nasfeco": "nasfeco", "product-x12": "product-x12", "product-g5p700a": "product-g5p700a",
-            "product-g2p600": "product-g2p600", "product-uf": "product-uf", "product-smart": "product-smart", "politica-cookies": "politica-cookies"}
+HREFLANG = {"": "", "product-x12": "product-x12", "product-uf": "product-uf", "politica-cookies": "politica-cookies"}
 
 def hreflang(path):
     if not HREFLANG_ON or path not in HREFLANG:
@@ -71,8 +72,7 @@ def wa(text):
     return f"https://wa.me/{WA_NUM}?text=" + quote(text)
 
 def price_list():
-    names = [("smart", "Dispensador ED01"), ("uf", "Ultrafiltración UF"), ("g2", "G2P600"), ("g5", "G5P700A"), ("x12", "X12")]
-    return ", ".join(f"{n} {cop(price(p))}" for p, n in names[:-1]) + f" y {names[-1][1]} {cop(price(names[-1][0]))}"
+    return f"Ultrafiltración UF {cop(price('uf'))} y X12 {cop(price('x12'))}"
 
 # ------------------------------------------------------------------ AL ESCRIBIR CADA PÁGINA
 # En el código del generador se escriben estos marcadores (así no chocan con las llaves de los f-strings):

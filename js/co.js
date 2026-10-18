@@ -19,11 +19,8 @@ const WD = {
   // Google Ads: vacío = no se envía nada. El ID (AW-...) va en ADS, más abajo.
   ads: { id: '', wa: '', lead: '' },         // {{ID 'AW-...' y etiquetas de conversión 'AW-XXXX/YYYY'}}
   products: {
-    x12:   { name: 'Waterdrop X12', price: 7990000, was: 8790000, code: 'COX12' },
-    g5:    { name: 'Waterdrop G5P700A', price: 5590000, was: 6790000, code: 'COG5' },
-    g2:    { name: 'Waterdrop G2P600', price: 3590000, was: 4790000, code: 'COG2' },
-    uf:    { name: 'Waterdrop Ultrafiltración UF', price: 1190000, was: 1520000, code: 'COUF' },
-    smart: { name: 'Waterdrop Dispensador ED01', price: 399000, was: 519000, code: 'COED01' }
+    x12: { name: 'Waterdrop X12', price: 7990000, was: 8790000, code: 'COX12' },
+    uf:  { name: 'Waterdrop Ultrafiltración UF', price: 1190000, was: 1520000, code: 'COUF' }
   }
 };
 
@@ -112,21 +109,19 @@ const WD = {
 
   /* ---------- buscador: 3 preguntas → un equipo (orientación, no diagnóstico) ---------- */
   const QZ = [
-    ['¿Dónde vives?', [['casa', 'Casa o apartamento propio', 'Puedo instalar algo bajo el lavaplatos'], ['arriendo', 'Arriendo o no quiero instalar nada', 'Prefiero algo sobre la mesa']]],
-    ['¿Qué te preocupa más del agua?', [['sabor', 'El sabor y el olor a cloro', 'Quiero agua más rica para tomar y cocinar'], ['todo', 'Sarro, metales y lo que no se ve', 'Quiero la máxima pureza']]],
+    ['¿Qué buscas en tu agua?', [['pura', 'La máxima pureza', 'Quitar sarro, metales y sales disueltas'], ['sabor', 'Mejor sabor, sin complicarme', 'Quitar el cloro y los sedimentos y conservar los minerales']]],
+    ['¿Hay tomacorriente bajo tu lavaplatos?', [['si', 'Sí', ''], ['no', 'No', ''], ['nose', 'No sé', 'Lo revisamos en la valoración']]],
     ['¿Cuántos son en casa?', [['1', '1 o 2 personas', ''], ['3', '3 a 5 personas', ''], ['6', '6 o más personas', '']]]
   ];
   const WHY = {
-    smart: 'Sin obras ni técnicos: lo llenas, lo cargas y tienes agua filtrada en 1 segundo. Ideal si vives en arriendo.',
-    uf: 'Quita el cloro y el mal sabor y conserva los minerales, sin electricidad ni desperdicio de agua.',
-    g2: 'Ósmosis inversa sin tanque al mejor precio: 7 etapas y 600 GPD, perfecta para hogares pequeños.',
-    g5: 'Ósmosis inversa con minerales alcalinos y 700 GPD en un equipo compacto, para toda la familia.',
-    x12: 'El más completo: 11 etapas, minerales, 1200 GPD y llave inteligente para familias grandes.'
+    x12: 'Ósmosis inversa de 11 etapas con minerales alcalinos y llave inteligente: la máxima pureza y una taza en unos 3 segundos.',
+    uf: 'Quita el cloro, los sedimentos y las bacterias y conserva los minerales del agua, sin electricidad ni desperdicio.',
+    ufp: 'La X12 necesita un tomacorriente bajo el lavaplatos. Sin él, la UF es la opción: sin electricidad y sin desperdicio. En la valoración vemos si se puede poner uno.'
   };
   function quiz() {
     let step = 0; const ans = {};
     const body = $('#qz-body');
-    const pick = () => ans[0] === 'arriendo' ? 'smart' : ans[1] === 'sabor' ? 'uf' : ans[2] === '1' ? 'g2' : ans[2] === '3' ? 'g5' : 'x12';
+    const pick = () => ans[1] === 'no' ? ['uf', 'ufp'] : ans[0] === 'sabor' ? ['uf', 'uf'] : ['x12', 'x12'];
     const render = () => {
       if (step < QZ.length) {
         const [q, o] = QZ[step];
@@ -134,12 +129,12 @@ const WD = {
           <div class="qz-o">${o.map(([v, t, s]) => `<button type="button" data-qa="${v}"><b>${t}</b>${s ? `<span>${s}</span>` : ''}</button>`).join('')}</div>`;
         $$('[data-qa]', body).forEach(b => b.addEventListener('click', () => { ans[step] = b.dataset.qa; step++; render(); }));
       } else {
-        const k = pick(), m = M[k];
+        const [k, w] = pick(), m = M[k];
         body.innerHTML = `<div class="qz-bar"><i style="width:100%"></i></div><p class="qz-n">Te recomendamos</p>
-          <div class="qz-r"><img src="${m.img}" alt=""><div><h3>${P[k].name}</h3><p>${WHY[k]}</p>
+          <div class="qz-r"><img src="${m.img}" alt=""><div><h3>${P[k].name}</h3><p>${WHY[w]}</p>
           <p class="qz-p"><b>${money(now(k))}</b>${promoOn ? `<s>${money(P[k].was)}</s>` : ''}</p>
-          <div class="row"><button type="button" class="btn b-gold" data-book="${k}"><span>${m.install ? 'Agendar valoración' : 'Pedir el mío'}</span><i>↗</i></button><a class="ul" href="${m.url}">Ver detalles</a></div></div></div>
-          <p class="fine">Es un punto de partida según tus respuestas. La compatibilidad de tu cocina se confirma en la valoración. <button type="button" class="ul" id="qz-again">Volver a empezar</button></p>`;
+          <div class="row"><button type="button" class="btn b-gold" data-book="${k}"><span>Agendar valoración</span><i>↗</i></button><a class="ul" href="${m.url}">Ver detalles</a></div></div></div>
+          <p class="fine">Es un punto de partida según tus respuestas; en la valoración confirmamos qué va mejor en tu cocina. <button type="button" class="ul" id="qz-again">Volver a empezar</button></p>`;
         $('#qz-again').addEventListener('click', () => { step = 0; render(); });
       }
     };
@@ -148,18 +143,19 @@ const WD = {
   $$('[data-quiz]').forEach(b => b.addEventListener('click', () => { quiz(); openDlg('d-quiz'); }));
 
   /* ---------- valoración / pedido en 3 pasos → WhatsApp (y copia al webhook con autorización de datos) ---------- */
-  const CITIES = CFG.cities || ['Bogotá', 'Medellín', 'Cali', 'Barranquilla'];
+  const ZONES = CFG.zones || { comunas: [], corr: [], otros: [] };
+  const inMed = z => ZONES.comunas.includes(z) || ZONES.corr.includes(z);
   const B = { model: null }; let stepB = 0;
   const val = k => esc(B[k] || '');
   const opt = (name, v, label) => `<label><input type="radio" name="${name}" value="${v}"${(B[name] || '') === v ? ' checked' : ''}><span>${label}</span></label>`;
-  const needsPower = k => ['x12', 'g5', 'g2'].includes(k);
+  const needsPower = k => k === 'x12';
   const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
   const LAB = { apto: 'Apartamento', casa: 'Casa', oficina: 'Oficina o negocio', yes: 'Sí', no: 'No', unsure: 'No lo sé', morning: 'Mañana', afternoon: 'Tarde', any: 'Cualquiera' };
   function side() {
     const k = B.model, m = M[k]; if (!m) return;
     $('#bk-img').src = m.img; $('#bk-model').textContent = P[k].name;
     $('#bk-price').textContent = money(now(k)) + (promoOn ? ` · código ${P[k].code}` : '');
-    $('#bk-inc').textContent = m.install ? 'IVA, valoración, instalación y kit de bienvenida incluidos.' : 'IVA incluido · sin instalación · envío por confirmar.';
+    $('#bk-inc').textContent = 'IVA, valoración, instalación en Medellín y kit de bienvenida incluidos.';
   }
   function renderBook() {
     const s = stepB, k = B.model, inst = M[k] && M[k].install;
@@ -168,8 +164,8 @@ const WD = {
     $$('.bk-prog span').forEach((el, i) => el.classList.toggle('on', i <= s));
     $('#bk-back').hidden = s === 0 || s === 3; $('.bk-btns').hidden = s === 3;
     $('#bk-next span').textContent = s === 2 ? 'Ver mi solicitud' : 'Continuar';
-    const T = [['Empecemos por tu equipo.', 'Todos incluyen IVA. Los equipos bajo el lavaplatos incluyen valoración, instalación y kit de bienvenida.'],
-      [inst ? 'Cuéntanos de tu casa.' : '¿A dónde lo enviamos?', inst ? 'Así preparamos tu valoración. La compatibilidad se confirma después.' : 'El ED01 no necesita instalación: te lo enviamos a cualquier ciudad.'],
+    const T = [['Empecemos por tu equipo.', 'Los dos incluyen IVA, valoración, instalación en Medellín y kit de bienvenida.'],
+      ['Cuéntanos de tu casa.', 'Así preparamos tu valoración. La compatibilidad se confirma después.'],
       ['¿Cómo te contactamos?', 'Te responde una persona de Nasfeco por WhatsApp.'],
       ['Tu solicitud está lista.', 'Revísala y envíala por WhatsApp. La cita o el pedido se confirman cuando Nasfeco te responda.']][s];
     $('#bk-title').textContent = T[0]; $('#bk-sub').textContent = T[1];
@@ -177,11 +173,13 @@ const WD = {
     if (s === 0) {
       h = Object.keys(M).map(x => `<label class="choice"><input type="radio" name="model" value="${x}"${k === x ? ' checked' : ''}><img src="${M[x].img}" alt=""><span><b>${P[x].name}</b><small>${M[x].gpd} · ${M[x].install ? 'con instalación' : 'sin instalación'}</small></span><strong>${money(now(x))}</strong></label>`).join('');
     } else if (s === 1) {
-      h = `<div class="f2"><div class="fld" data-f="city"><label for="f-city">Ciudad</label><select id="f-city" name="city"><option value="">Elige tu ciudad</option>${CITIES.map(c => `<option${B.city === c ? ' selected' : ''}>${c}</option>`).join('')}<option${B.city === 'Otra ciudad' ? ' selected' : ''}>Otra ciudad</option></select><span class="msg"></span></div>
-        <div class="fld"><label for="f-zone">Barrio o municipio <small>(opcional)</small></label><input id="f-zone" name="zone" value="${val('zone')}" placeholder="Ej. Chapinero"></div></div>
+      const og = (lab, xs) => `<optgroup label="${lab}">${xs.map(c => `<option${B.city === c ? ' selected' : ''}>${c}</option>`).join('')}</optgroup>`;
+      h = `<div class="f2"><div class="fld" data-f="city"><label for="f-city">Comuna o corregimiento</label><select id="f-city" name="city"><option value="">Elige dónde vives</option>${og('Medellín · comunas', ZONES.comunas)}${og('Medellín · corregimientos', ZONES.corr)}${og('Fuera de Medellín', ZONES.otros)}</select><span class="msg"></span></div>
+        <div class="fld"><label for="f-zone">Barrio <small>(opcional)</small></label><input id="f-zone" name="zone" value="${val('zone')}" placeholder="Ej. Laureles"></div></div>
+        ${B.city && !inMed(B.city) ? '<p class="bk-warn">Por ahora instalamos solo en Medellín. Igual envíanos tu solicitud y te contamos cuándo llegamos a tu zona.</p>' : ''}
         <div class="fld"><label>Tipo de vivienda</label><div class="seg">${opt('home', 'apto', 'Apartamento')}${opt('home', 'casa', 'Casa')}${opt('home', 'oficina', 'Oficina o negocio')}</div></div>
         ${needsPower(k) ? `<div class="fld" data-f="outlet"><label>¿Hay tomacorriente bajo el lavaplatos?</label><div class="seg">${opt('outlet', 'yes', 'Sí')}${opt('outlet', 'no', 'No')}${opt('outlet', 'unsure', 'No lo sé')}</div><span class="msg"></span></div>` : ''}
-        <p class="fine">${inst ? `Instalamos en ${CITIES.join(', ').replace(/, ([^,]*)$/, ' y $1')}. En otra ciudad te acompañamos por videollamada.` : 'El costo del envío se confirma por WhatsApp.'}</p>`;
+        <p class="fine">Hoy instalamos en las 16 comunas de Medellín. En los corregimientos lo coordinamos contigo.</p>`;
     } else if (s === 2) {
       h = `<div class="f2"><div class="fld" data-f="name"><label for="f-name">Nombre</label><input id="f-name" name="name" autocomplete="name" value="${val('name')}"><span class="msg"></span></div>
         <div class="fld" data-f="phone"><label for="f-phone">Celular / WhatsApp</label><input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" value="${val('phone')}" placeholder="300 123 4567"><span class="msg"></span></div></div>
@@ -195,7 +193,7 @@ const WD = {
         <p class="fine">Se abre WhatsApp con tu solicitud escrita; nada se envía hasta que presiones enviar. En esta web no se cobra nada.</p></div>`;
     }
     $('#bk-fields').innerHTML = h; side();
-    $$('#bk-fields input, #bk-fields select').forEach(i => i.addEventListener('change', () => { capture(); side(); }));
+    $$('#bk-fields input, #bk-fields select').forEach(i => i.addEventListener('change', () => { capture(); side(); if (i.name === 'city') renderBook(); }));
     if (s === 3) {
       $('#bk-edit').addEventListener('click', () => { stepB = 0; renderBook(); });
       $('#bk-send').addEventListener('click', () => { lead({ source: 'Waterdrop CO valoracion', ...flat() }); conv(WD.ads.lead); });
@@ -208,19 +206,19 @@ const WD = {
   const phoneOK = v => /^(\+?57)?3\d{9}$/.test((v || '').replace(/[\s().-]/g, ''));
   function summary() {
     const k = B.model, m = M[k], r = [['Equipo', `${P[k].name} · ${money(now(k))}${promoOn ? ` con el código ${P[k].code} (${WD.promo.name})` : ''}`],
-      ['Ciudad', [B.city, B.zone].filter(Boolean).join(' · ')], ['Vivienda', LAB[B.home] || '—']];
+      ['Zona', [B.zone, B.city].filter(Boolean).join(' · ') + (inMed(B.city) ? ', Medellín' : '')], ['Vivienda', LAB[B.home] || '—']];
     if (needsPower(k)) r.push(['Tomacorriente bajo el lavaplatos', LAB[B.outlet] || '—']);
     r.push(['Nombre', B.name], ['Celular', B.phone], ['Correo', B.email || '—']);
     if (m.install) r.push(['Fecha preferida', B.date || '—'], ['Franja', LAB[B.slot] || '—']);
     return r;
   }
   const flat = () => ({ country: 'CO', model: P[B.model].name, price: now(B.model), code: promoOn ? P[B.model].code : '', city: B.city || '', zone: B.zone || '', home: LAB[B.home] || '', outlet: LAB[B.outlet] || '', name: B.name || '', phone: B.phone || '', email: B.email || '', date: B.date || '', slot: LAB[B.slot] || '' });
-  const summaryText = () => (M[B.model].install ? '¡Hola Nasfeco! Quiero agendar mi valoración.' : '¡Hola Nasfeco! Quiero hacer un pedido.') + '\n\n' + summary().map(([a, b]) => `${a}: ${b}`).join('\n');
+  const summaryText = () => '¡Hola Nasfeco! Quiero agendar mi valoración en Medellín.' + '\n\n' + summary().map(([a, b]) => `${a}: ${b}`).join('\n');
   function validate() {
     const s = stepB, er = {};
     $$('.fld.bad').forEach(f => { f.classList.remove('bad'); const m = $('.msg', f); if (m) m.textContent = ''; });
     if (s === 0 && !B.model) er._ = 'Elige un equipo.';
-    if (s === 1) { if (!B.city) er.city = 'Elige tu ciudad.'; if (needsPower(B.model) && !B.outlet) er.outlet = 'Elige una opción.'; }
+    if (s === 1) { if (!B.city) er.city = 'Elige tu comuna o corregimiento.'; if (needsPower(B.model) && !B.outlet) er.outlet = 'Elige una opción.'; }
     if (s === 2) {
       if ((B.name || '').length < 2) er.name = 'Escribe tu nombre.';
       if (!phoneOK(B.phone)) er.phone = 'Escribe un celular colombiano de 10 dígitos (empieza por 3).';
@@ -239,9 +237,24 @@ const WD = {
       const b = e.target.closest('[data-book]'); if (!b) return;
       const k = b.dataset.book;
       B.model = M[k] ? k : (B.model || ($('[data-pdp]') && $('[data-pdp]').dataset.pdp) || 'x12');
+      if (b.dataset.zone) B.city = b.dataset.zone;
       stepB = M[k] ? 1 : 0; renderBook(); openDlg('d-book');
     });
   }
+
+  /* ---------- ¿Llegamos a tu casa? (comuna de Medellín) ---------- */
+  $$('[data-check]').forEach(f => {
+    const sel = $('select', f), out = $('[data-check-out]', f), go = $('[data-check-go]', f);
+    const run = () => {
+      const z = sel.value; if (!z) { out.innerHTML = ''; go.hidden = true; return; }
+      const yes = ZONES.comunas.includes(z), corr = ZONES.corr.includes(z);
+      out.className = 'zc-out ' + (yes ? 'ok' : corr ? 'mid' : 'no');
+      out.innerHTML = yes ? `<b>¡Sí llegamos a ${esc(z)}!</b> Valoración, instalación y kit de bienvenida incluidos.` : corr ? `<b>${esc(z)}: lo coordinamos contigo.</b> Escríbenos y revisamos la visita.` : `<b>Por ahora no instalamos en ${esc(z)}.</b> Hoy estamos solo en Medellín; déjanos tus datos y te avisamos cuando lleguemos.`;
+      go.hidden = false; go.dataset.zone = z; $('span', go).textContent = yes || corr ? 'Agendar mi valoración' : 'Avísenme cuando lleguen';
+    };
+    sel.addEventListener('change', run);
+    f.addEventListener('submit', e => e.preventDefault());
+  });
 
   /* ---------- envío a n8n (formularios con autorización de datos) ---------- */
   function lead(data) {
@@ -267,11 +280,11 @@ const WD = {
     ccBtn.addEventListener('click', () => setCC(cc.hidden));
     $('[data-cc-close]').addEventListener('click', () => { setCC(false); ccBtn.focus(); });
     const CC = {
-      which: `Para máxima pureza y familias grandes, la X12 (${money(now('x12'))}). Con minerales alcalinos, el G5P700A (${money(now('g5'))}). Ósmosis inversa al mejor precio, el G2P600 (${money(now('g2'))}). Sin electricidad, la UF (${money(now('uf'))}). Si vives en arriendo, el Dispensador ED01 (${money(now('smart'))}). El buscador de 3 preguntas te orienta en un minuto.`,
-      inc: 'En la X12, el G5P700A, el G2P600 y la UF: el equipo original, la valoración de tu cocina, la instalación estándar, el kit de bienvenida (bolso, botella Owala personalizada y toalla bordada) y el seguimiento. Todo con IVA incluido. El ED01 no necesita instalación.',
-      kitchen: 'Revisamos el espacio bajo el lavaplatos, la toma de agua, el desagüe, el tomacorriente (en los equipos de ósmosis) y dónde va la llave. Si hace falta alguna adaptación, te la decimos por escrito antes de instalar.',
-      care: 'Te enseñamos a usar el equipo, hacemos seguimiento y te recordamos cuándo toca el mantenimiento. La garantía la gestiona Nasfeco en Colombia, conforme al Estatuto del Consumidor (Ley 1480 de 2011).',
-      pay: 'Arma tu solicitud y envíala por WhatsApp: un asesor confirma disponibilidad, fecha y las formas de pago. En esta web no se cobra nada.'
+      which: `Si quieres la máxima pureza (quitar sarro, metales y sales), la X12: ${money(now('x12'))}, necesita tomacorriente. Si quieres mejor sabor sin gastar luz, la Ultrafiltración UF: ${money(now('uf'))}. El buscador de 3 preguntas te orienta en un minuto.`,
+      inc: 'El equipo original con su llave, la valoración de tu cocina, la instalación estándar en Medellín, tu kit de bienvenida (bolso, botella Owala personalizada y toalla bordada) y el seguimiento. Todo con IVA incluido.',
+      kitchen: 'Revisamos el espacio bajo el lavaplatos, la toma de agua, el desagüe, dónde va la llave y, para la X12, el tomacorriente. Si hace falta alguna adaptación, te la decimos por escrito antes de instalar.',
+      care: 'Te enseñamos a usar el equipo, hacemos seguimiento y te recordamos el mantenimiento. La garantía la gestiona Nasfeco aquí en Colombia, conforme al Estatuto del Consumidor (Ley 1480 de 2011).',
+      pay: 'Envías tu solicitud por WhatsApp y un asesor te confirma la fecha y las formas de pago. En esta web no se cobra nada.'
     };
     $$('[data-cc-topic]').forEach(b => b.addEventListener('click', () => { $('#cc-a').textContent = CC[b.dataset.ccTopic]; $$('[data-cc-topic]').forEach(x => x.classList.toggle('on', x === b)); }));
   }
@@ -282,7 +295,7 @@ const WD = {
 
   /* ---------- calculadora de botellones ---------- */
   $$('[data-calc]').forEach(c => {
-    const ppl = $('[name=ppl]', c), bot = $('[name=bot]', c), pr = $('[name=jug]', c); let k = c.dataset.default || 'g5', touched = false;
+    const ppl = $('[name=ppl]', c), bot = $('[name=bot]', c), pr = $('[name=jug]', c); let k = c.dataset.default || 'x12', touched = false;
     const out = n => $(`[data-o="${n}"]`, c);
     const run = () => {
       const p = +ppl.value; if (!touched) bot.value = Math.max(1, Math.round(p * .75));

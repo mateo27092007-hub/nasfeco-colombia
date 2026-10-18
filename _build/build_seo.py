@@ -5,9 +5,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import co as C
 
 TODAY = datetime.date.today().isoformat()
-PAGES = [("", "1.0"), ("nasfeco", "0.8"),
-         ("product-x12", "0.8"), ("product-g5p700a", "0.8"), ("product-g2p600", "0.8"), ("product-uf", "0.8"), ("product-smart", "0.8")] + \
-        [(f"purificadores-agua-{slug}", "0.9") for slug, _, _ in C.CITIES] + [("politica-cookies", "0.3")]
+PAGES = [("", "1.0"), ("product-x12", "0.9"), ("product-uf", "0.9"), ("politica-cookies", "0.3")]
 
 for path, _ in PAGES:   # no publicar en el sitemap una página que no existe
     assert os.path.exists(os.path.join(C.ROOT, (path or "index") + ".html")), path
