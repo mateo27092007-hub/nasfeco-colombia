@@ -40,15 +40,13 @@ def btn(text, attrs="", cls="b-gold", href=None, icon=I_ARR):
 def wa_btn(text, msg, cls="b-wa"): return f'<a class="btn {cls}" href="{C.wa(msg)}" target="_blank" rel="noopener"><span>{text}</span><i>{WA}</i></a>'
 
 # ------------------------------------------------------------------ marca: logo NASFECO COLOMBIA, sello, motivos colombianos
-MARK = '<path d="M6 4H27L95 50H73L27 19V73L6 87Z" fill="{g}"/><path d="M6 96C42 92 72 76 95 50H73C58 64 36 76 6 80Z" fill="{o}"/>'
+# Logo oficial NASFECO COLOMBIA (assets/brand): a color para fondos claros, blanco y dorado para fondos oscuros.
 def logo(kind="c", h=40, cls=""):
-    g, o, t = ("#0B5E43", "#B8861F", "#0B5E43") if kind == "c" else ("#FFFFFF", "#E8B53C", "#FFFFFF")
-    return (f'<svg class="logo {cls}" viewBox="0 0 400 100" width="{h * 4}" height="{h}" role="img" aria-label="NASFECO Colombia">{MARK.format(g=g, o=o)}'
-            f'<text x="114" y="66" font-family="Bricolage Grotesque,Montserrat,Arial,sans-serif" font-weight="800" font-size="62" fill="{t}" textLength="280" lengthAdjust="spacingAndGlyphs">NASFECO</text>'
-            f'<text x="118" y="94" font-family="Montserrat,Arial,sans-serif" font-weight="700" font-size="19" fill="{o}" textLength="272" lengthAdjust="spacing">COLOMBIA</text></svg>')
+    src = "assets/brand/nasfeco-colombia.png" if kind == "c" else "assets/brand/nasfeco-colombia-blanco.png"
+    return f'<img class="logo {cls}" src="{a(src)}" alt="NASFECO Colombia" width="{round(h * 800 / 183)}" height="{h}">'
 def mark(w=34, kind="w"):
-    g, o = ("#FFFFFF", "#E8B53C") if kind == "w" else ("#0B5E43", "#B8861F")
-    return f'<svg viewBox="0 0 100 100" width="{w}" height="{w}" aria-hidden="true">{MARK.format(g=g, o=o)}</svg>'
+    src = "assets/brand/simbolo-blanco.png" if kind == "w" else "assets/brand/simbolo.png"
+    return f'<img class="mk" src="{a(src)}" alt="" width="{w}" height="{w}">'
 def seal():
     """Sello giratorio de distribuidor oficial (como en la web de Ecuador)."""
     return (f'<div class="seal" aria-hidden="true"><svg class="seal-r" viewBox="0 0 200 200"><defs><path id="sealp" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0"/></defs>'
@@ -135,7 +133,7 @@ def head(title, desc, path, ld, img="assets/home/escena-cocina.jpg"):
 <link rel="canonical" href="{url}">{C.hreflang(path)}
 <meta name="theme-color" content="#05281D">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Nasfeco Colombia"><meta property="og:locale" content="es_CO"><meta property="og:title" content="{title}"><meta property="og:description" content="{desc}"><meta property="og:image" content="{SITE}{a(img)}"><meta property="og:url" content="{url}"><meta name="twitter:card" content="summary_large_image">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/png" href="favicon.png"><link rel="apple-touch-icon" href="favicon.png">
 <link rel="preload" href="assets/fonts/bricolage-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/co.css?v={V}">
@@ -486,7 +484,7 @@ def closing(k=None):
 </section>'''
 
 def org_ld():
-    return {"@type": "LocalBusiness", "@id": SITE + "#negocio", "name": "Nasfeco Colombia", "legalName": C.COMPANY, "url": SITE, "logo": SITE + "favicon.svg",
+    return {"@type": "LocalBusiness", "@id": SITE + "#negocio", "name": "Nasfeco Colombia", "legalName": C.COMPANY, "url": SITE, "logo": SITE + "assets/brand/nasfeco-colombia.png",
             "image": SITE + "assets/img/kit-bienvenida.webp", "telephone": "§TEL§", "email": "§MAIL§", "priceRange": "$$",
             "description": "Distribuidor oficial de Waterdrop Filter en Colombia. Purificadores de agua X12 y Ultrafiltración UF con valoración, instalación en Medellín, kit de bienvenida y seguimiento.",
             "address": {"@type": "PostalAddress", "addressLocality": "Medellín", "addressRegion": "Antioquia", "addressCountry": "CO"},

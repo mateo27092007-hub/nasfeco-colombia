@@ -8,7 +8,7 @@ import os, re
 from urllib.parse import quote
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-VER = "6"
+VER = "7"
 # Vista previa (GitHub Pages): los buscadores no indexan el borrador. Ponlo en False el día del lanzamiento.
 PREVIEW = True                                   # súbelo cada vez que cambies css/co.css o js/co.js
 

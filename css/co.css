@@ -98,7 +98,9 @@ ul,ol{list-style:none}
 .mnav .btn{align-self:flex-start}
 
 /* ---------- logo ---------- */
-.logo{display:block;height:auto}
+.logo{display:block;width:auto;object-fit:contain}
+.mk{display:block;object-fit:contain;flex:none}
+.seal .mk{position:relative;z-index:1}
 
 /* ---------- portada ---------- */
 .hero{position:relative;display:flex;align-items:center;color:#fff;background:radial-gradient(120% 90% at 90% 0%,#0F4F3D 0%,var(--forest) 62%);overflow:hidden;padding:140px 0 84px}
